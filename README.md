@@ -51,6 +51,12 @@ Yahoo!デベロッパーネットワークで[アプリケーションIDを登�
 
 白地図レイヤーを使うと、市区町村ごとに地図を塗り分けることができます。
 
+### usage-blankmap-areapolygon
+
+[白地図レイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#BlankMapLayer)の使い方を紹介したサンプルコードです。
+
+スタイルを指定することによって、指定のエリアを色分け表示して解りやすく表現することができます。
+
 ### usage-heatmap
 
 [GeoXml切り替えプラグイン](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YPlugin.html#GeoXmlPlugin)の使い方を紹介したサンプルコードです。
