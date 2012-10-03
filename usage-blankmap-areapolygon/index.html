@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId" charset="utf-8"></script>
+<title>住所色分け表示(東京都) - YOLP JavaScriptマップAPI サンプルコード</title>
+<script type="text/javascript">
+ /*
+  * Copyright (c) 2012, Yahoo Japan Corporation.  All rights reserved.
+  * Copyrights licensed under the MIT License.
+  * See the accompanying LICENSE file for terms. */
+
+window.onload = function() {
+    var map = new Y.Map("map", {"configure": {"scrollWheelZoom": true}});
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.SliderZoomControlHorizontal());
+
+    //地図を描画します。
+    map.drawMap(new Y.LatLng(35.6821141786951,139.75630702905684), 10);
+
+    //白地図レイヤーを作成します。
+    var blankmap = new Y.BlankMapLayer();
+    var style = {
+        "label": {
+            "default": "off"
+        },
+        "border": {
+            "default": "off"
+        },
+        "area": {
+            "default": "off",
+            "13": "F00" // 東京都を赤色で塗り分け
+        },
+        "bg": "off"
+    };
+    blankmap.setOpacity(0.3); // レイヤーの透過度を0.3に設定
+    blankmap.setStyle(style, true);
+    map.addLayer(blankmap);
+};
+</script>
+</head>
+<body>
+<h1>住所色分け表示(東京都)</h1>
+<div id="map" style="width:600px; height:480px"></div>
+<p>
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="http://developer.yahoo.co.jp/about">
+<img src="http://i.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" style="border:0; margin:15px 15px 15px 15px;"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+</p>
+</body>
+</html>
