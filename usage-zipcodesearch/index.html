@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>郵便番号検索</title>
+<style type="text/css">
+html, body {
+    width:100%; height:100%;
+}
+html, body, div{
+    margin:0; padding:0;
+}
+div#panel {
+    font-size:9pt;
+    z-index:2;
+    padding:8px;
+    overflow:hidden;
+    color: #fff;
+    background-color: #000;
+    background-image: -webkit-gradient(
+    linear,
+    0% 0%,
+    0% 100%,
+    from(rgba(155, 155, 155, 0.1)),
+    to(rgba(255, 255, 255, 0.5)),
+    color-stop(.5,rgba(155, 155, 155, 0.2)),
+    color-stop(.5,rgba(255, 255, 255, 0.1))
+    );
+    border-radius: 8px;
+    opacity: .7;
+}
+</style>
+<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script type="text/javascript">
+ /*
+  * Copyright (c) 2012, Yahoo Japan Corporation.  All rights reserved.
+  * Copyrights licensed under the MIT License.
+  * See the accompanying LICENSE file for terms. */
+var map;
+window.onload = function() {
+    // 地図表示
+    map = new Y.Map('map', {
+        configure : {
+            scrollWheelZoom : true,
+            weatherOverlay: true // 雨雲レーダーON
+        }
+    });
+    map.drawMap(new Y.LatLng(35, 135), 14, Y.LayerSetId.NORMAL);
+    // ズームコントロール追加
+    map.addControl(new Y.ZoomControl(), new Y.ControlPosition(Y.ControlPosition.TOP_RIGHT));
+
+    // 検索ボタン押下
+    $("#search").click(function(e) {
+        zipsearch();
+    });
+    $("#zip").keydown(function(e) {
+        if (e.keyCode == 13) {
+            zipsearch();
+        }
+    });
+
+    // リサイズ(回転)の時に地図更新
+    $(window).resize(function() {
+        map.updateSize();
+    });
+};
+
+// 郵便番号検索
+function zipsearch() {
+    // 吹き出しと表示中のアイコンをクリア
+    map.closeInfoWindow();
+    map.clearFeatures();
+    // 郵便番号検索
+    var url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/zipCodeSearch";
+    var param = {
+        appid: "YourApplicationId",
+        output: "json",
+        query: $("#zip").val()
+    };
+    $.ajax({
+        url: url,
+        data: param,
+        dataType: "jsonp",
+        success: function(result) {
+            var ydf = new Y.YDF(result);
+            // 郵便番号をリスト表示
+            dispZipList(ydf);
+        },
+        error: function() {
+            // エラー時の処理
+        }
+    });
+}
+
+// 郵便番号をリスト表示
+function dispZipList(ydf) {
+    var zipList = $("#ziplist");
+    zipList.empty();
+    if (ydf.result.count > 0) {
+        for (var i = 0; i < ydf.features.length; i ++) {
+            // リスト作成
+            var zip = $("<div></div>");
+            zip.append(ydf.features[i].name + "<br/>");
+            zip.append("住所：" + ydf.features[i].property.Address + "<br/>");
+            zipList.append(zip);
+        }
+        // リストの 1 件目の緯度経度を取得
+        var latlng = ydf.features[0].getLatLng();
+        // 地図移動
+        map.panTo(latlng);
+        // 4km の円を描画
+        var circle = new Y.Circle(latlng, 4, {
+            unit: "km",
+            strokeStyle: new Y.Style("", 0, 0), //線は無し
+            fillStyle: new Y.Style( "ff00ff", 0, 0.2), //塗りつぶしは透過度 0.2 で赤色
+        });
+        circle.setClickable(false); // 円をクリックできないように設定
+        map.addFeature(circle);
+        // ローカルサーチで店舗を取得
+        localsearch(latlng);
+    }
+}
+
+// ローカルサーチ
+function localsearch(latlng) {
+    var cid = "d8a23e9e64a4c817227ab09858bc1330,132c700e0ebf5a1d386e9b725d7d1e6b"; //電話帳およびロコプレイスカセットを設定
+    var options = {
+        gc: "0114002,0114003",
+        dist: 4,
+        lat: latlng.lat(),
+        lon: latlng.lng(),
+        detail: "full"
+    };
+    var local = new Y.LocalSearch();
+    local.search("", cid, options, function(ydf) {
+        // 吹き出し作成
+        for (var i = 0; i < ydf.features.length; i ++) {
+            var html = "<a href='" + ydf.features[i].property.Detail.YUrl + "'>" + ydf.features[i].name + "</a><br/>" +
+                "<div>" + ydf.features[i].property.Tel1 + "</div>";
+            ydf.features[i].bindInfoWindow(html);
+        }
+        map.addFeatures(ydf.features);
+    });
+}
+</script>
+</head>
+<body>
+<div id="map" style="width:100%; height:100%;"></div>
+<div id="panel" style="position:absolute; top:4px; left:4px;">
+郵便番号：<input type="text" id="zip" /><input id="search" type="button" value="検索" />
+<div id="ziplist"></div>
+</div>
+</body>
+</html>

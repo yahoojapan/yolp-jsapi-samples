@@ -45,17 +45,17 @@ Yahoo!デベロッパーネットワークで[アプリケーションIDを登�
 各サンプルコードの概要
 ----------------------
 
-### usage-blankmap
-
-[白地図レイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#BlankMapLayer)の使い方を紹介したサンプルコードです。
-
-白地図レイヤーを使うと、市区町村ごとに地図を塗り分けることができます。
-
 ### usage-blankmap-areapolygon
 
 [白地図レイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#BlankMapLayer)の使い方を紹介したサンプルコードです。
 
 スタイルを指定することによって、指定のエリアを色分け表示して解りやすく表現することができます。
+
+### usage-blankmap
+
+[白地図レイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#BlankMapLayer)の使い方を紹介したサンプルコードです。
+
+白地図レイヤーを使うと、市区町村ごとに地図を塗り分けることができます。
 
 ### usage-heatmap
 
@@ -74,6 +74,13 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 [スタイル地図レイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#StyleMapLayer)の使い方を紹介したサンプルコードです。
 
 スタイル地図レイヤーを使うと、地図のベースカラーを変更したり、地図上から道路や建物を消したりといったスタイルを自由に変更できます。
+
+### usage-zipcodesearch
+
+[郵便番号検索API](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/zipcodesearch.html)の使い方を紹介したサンプルコードです。
+
+郵便番号検索APIでは、郵便番号に関する情報を取得できます。
+郵便番号を指定して、位置情報（地点名・緯度・経度）を取得できます。
 
 ### webapp-distribution-mcdonalds
 
