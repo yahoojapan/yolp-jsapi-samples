@@ -116,6 +116,15 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 
 * [YOLP 30分クッキング(SlideShare)](http://www.slideshare.net/techblogyahoo/yolp-30)
 
+### webapp-routesearch-weather
+
+株式会社翔泳社が運営するCodeZineへ寄稿した[ルートを探しながら雨雲をチェック！ YOLPで作る簡単便利地図アプリ](http://codezine.jp/article/detail/6837)という記事に書かれた、Yahoo! JavaScriptマップAPIを利用して作るWebアプリケーションのサンプルコードです。
+
+現在地から指定した場所へのルート検索を行いつつ、ルート上の雨雲状況をビジュアルにチェックできるスマホ・タブレット用のWebアプリです。
+
+このサンプルコードはiPhone Safariブラウザ、Android標準ブラウザに最適化されています。
+
+
 ライセンス
 ----------
 

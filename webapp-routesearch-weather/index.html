@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>ルート雨雲チェッカー</title>
+<style type="text/css">
+html, body {
+    width:100%; height:100%;
+}
+html, body, div{
+    margin:0; padding:0;
+}
+div#label{
+    z-index:2;
+    padding:8px;
+    overflow:hidden;
+    color: #fff;
+    background-color: #000;
+    background-image: -webkit-gradient(
+        linear,
+        0% 0%,
+        0% 100%,
+        from(rgba(155, 155, 155, 0.1)),
+        to(rgba(255, 255, 255, 0.5)),
+        color-stop(.5,rgba(155, 155, 155, 0.2)),
+        color-stop(.5,rgba(255, 255, 255, 0.1))
+    );
+    border-radius: 8px;
+    opacity: .7;
+}
+div#title{
+    font-size:14pt;
+    font-weight:bold;
+    line-height:1.2em;
+    width:100%;
+    overflow:hidden;
+}
+div#cur, div#dst{
+    font-size:10pt;
+    font-weight:normal;
+    line-height:10pt;
+    overflow:hidden;
+}
+div#summary{
+    font-size:12pt;
+    font-weight:bold;
+    line-height:12pt;
+    overflow:hidden;
+}
+div#credit{
+    font-size:12pt;
+    font-weight:bold;
+    line-height:12pt;
+    overflow:hidden;
+}
+</style>
+<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
+<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script>
+ /*
+  * Copyright (c) 2012, Yahoo Japan Corporation. All rights reserved.
+  * Copyrights licensed under the MIT License.
+  * See the accompanying LICENSE file for terms. */
+
+window.onload = function() {
+    // 地図表示
+    var map = new Y.Map('map', {
+        configure : {
+            scrollWheelZoom : true,
+            weatherOverlay: true // 雨雲レーダーON
+        }
+    });
+    map.drawMap(new Y.LatLng(35, 135), 15, Y.LayerSetId.NORMAL);
+    map.addControl(new Y.ZoomControl());
+ 
+    // 始点は Geolocation API を使って現在地を一定間隔で取得
+    var start = new Y.LatLng(35, 135); // 始点
+    var end;   // 終点
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(function(pos) {
+            start = new Y.LatLng(pos.coords.latitude, pos.coords.longitude);
+            map.panTo(start);
+            createRoute(start, end);
+        }, null, {
+            enableHighAccuracy: true,
+            timeout: 3000,
+            maximumAge: 0
+        });
+    }
+ 
+    // 終点は地図をタップして設定
+    map.bind('click', function(pos) {
+        end = pos;
+        createRoute(start, end);
+    });
+ 
+    // ルートを表示するためのレイヤーを設定する
+    var routeSearchLayer = new Y.RouteSearchLayer();
+    routeSearchLayer.bind('drawend', function(result) {
+        dispRouteInfo(result);
+    });
+    map.addLayer(routeSearchLayer);
+ 
+    // ルートを表示する
+    var createRoute = function(s, e) {
+        if (s && e) {
+            routeSearchLayer.clearRoute();
+            var config = {
+                enableRestrict: true, // 交通規制を考慮する
+                useCar: true,         // 自動車を使う
+                useFerry: true        // フェリーを使用する
+            };
+            routeSearchLayer.execute([s, e], config);
+        }
+    };
+ 
+    // ルート情報を表示する
+    var dispRouteInfo = function(result) {
+        $('#summary').html('総距離' + result.TotalDistance + 'm, 総時間' + result.TotalTime + '分');
+        // 始点と終点の住所を取得して表示
+        var geocoder = new Y.GeoCoder();
+        geocoder.execute({latlng: start}, function(r) {
+            $('#cur').html('現在地 : ' + r.features[0].property.Address);
+        });
+        geocoder.execute({latlng: end}, function(r) {
+            $('#dst').html('目的地 : ' + r.features[0].property.Address);
+        });
+    };
+ 
+    // リサイズ(回転)の時に地図更新
+    $(window).resize(function() {
+        map.updateSize();
+    });
+};
+</script>
+</head>
+<body>
+<div id="map" style="width:100%; height:100%;"></div>
+<div id="label" style="position:absolute; bottom:4px; right:4px;">
+    <div id="title">ルート雨雲チェッカー</div>
+    <div id="cur">現在地 : </div>
+    <div id="dst">地図をタップして目的地を設定してください</div>
+    <div id="summary"></div>
+    <div id="credit">
+        <!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+        <a href="http://developer.yahoo.co.jp/about">
+        <img src="http://i.yimg.jp/images/yjdn/yjdn_attbtn1_125_17.gif" title="Webサービス by Yahoo! JAPAN" alt="Web Services by Yahoo! JAPAN" width="125" height="17" style="border:0; margin:0;">
+        </a>
+        <!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+    </div>
+</div>
+</body>
+</html>
