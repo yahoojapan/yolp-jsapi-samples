@@ -74,35 +74,43 @@ window.onload = function() {
     });
     map.drawMap(new Y.LatLng(35, 135), 15, Y.LayerSetId.NORMAL);
     map.addControl(new Y.ZoomControl());
- 
-    // 始点は Geolocation API を使って現在地を一定間隔で取得
+
+    // 始点は Geolocation API を使って現在地を取得
     var start = new Y.LatLng(35, 135); // 始点
-    var end;   // 終点
+    var end; // 終点
     if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(function(pos) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
             start = new Y.LatLng(pos.coords.latitude, pos.coords.longitude);
             map.panTo(start);
-            createRoute(start, end);
         }, null, {
-            enableHighAccuracy: true,
-            timeout: 3000,
-            maximumAge: 0
+            enableHighAccuracy: true, timeout: 3000, maximumAge: 0
         });
     }
- 
+
     // 終点は地図をタップして設定
     map.bind('click', function(pos) {
         end = pos;
-        createRoute(start, end);
+        // 現在地を取得
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                start = new Y.LatLng(pos.coords.latitude, pos.coords.longitude);
+                createRoute(start, end);
+            }, function() {
+                // 取れなかった場合
+                createRoute(start, end);
+            }, {
+                enableHighAccuracy: true, timeout: 3000, maximumAge: 0
+            });
+        }
     });
- 
+
     // ルートを表示するためのレイヤーを設定する
     var routeSearchLayer = new Y.RouteSearchLayer();
     routeSearchLayer.bind('drawend', function(result) {
         dispRouteInfo(result);
     });
     map.addLayer(routeSearchLayer);
- 
+
     // ルートを表示する
     var createRoute = function(s, e) {
         if (s && e) {
@@ -115,7 +123,7 @@ window.onload = function() {
             routeSearchLayer.execute([s, e], config);
         }
     };
- 
+
     // ルート情報を表示する
     var dispRouteInfo = function(result) {
         $('#summary').html('総距離' + result.TotalDistance + 'm, 総時間' + result.TotalTime + '分');
@@ -128,7 +136,7 @@ window.onload = function() {
             $('#dst').html('目的地 : ' + r.features[0].property.Address);
         });
     };
- 
+
     // リサイズ(回転)の時に地図更新
     $(window).resize(function() {
         map.updateSize();
