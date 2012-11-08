@@ -70,15 +70,11 @@ jQuery(document).ready(function($){
     map.addControl(new Y.ZoomControl());
     map.drawMap(new Y.LatLng(34.6812,135.2022), 14, Y.LayerSetId.NORMAL);
 
-    //main loop
-    var lastlatlng = new Y.LatLng(0,0);
+    //main
     if(navigator.geolocation){
-        navigator.geolocation.watchPosition(function(pos){
-        var latlng = new Y.LatLng(pos.coords.latitude,pos.coords.longitude);
-        if(latlng.distance(lastlatlng) > 0.1){
-            lastlatlng = latlng;
+        navigator.geolocation.getCurrentPosition(function(pos){
+            var latlng = new Y.LatLng(pos.coords.latitude,pos.coords.longitude);
             searchNearestMcDonald(latlng);
-            }
         });
     }
 
