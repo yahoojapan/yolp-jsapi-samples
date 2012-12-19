@@ -82,6 +82,12 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 郵便番号検索APIでは、郵便番号に関する情報を取得できます。
 郵便番号を指定して、位置情報（地点名・緯度・経度）を取得できます。
 
+### webapp-animation-weather
+
+[雨雲レーダーレイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#WeatherMapLayer)の使い方を紹介したサンプルコードです。
+
+雨雲レーダーのアニメーション表示ができます。
+
 ### webapp-distribution-mcdonalds
 
 株式会社翔泳社が運営するCodeZineへ寄稿した[YOLP Hacks：API群を組み合わせてオリジナルWebアプリケーションを作る](http://codezine.jp/article/detail/6103)という記事に書かれた、Yahoo! JavaScriptマップAPIを利用して作るWebアプリケーションのサンプルコードです。

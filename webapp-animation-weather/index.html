@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>雨雲レーダー</title>
+<style type="text/css">
+html, body {
+    width:100%; height:100%;
+}
+html, body, div{
+    margin:0; padding:0;
+}
+div#label{
+    z-index:2;
+    padding:8px;
+    overflow:hidden;
+    color: #fff;
+    background-color: #000;
+    background-image: -webkit-gradient(
+        linear,
+        0% 0%,
+        0% 100%,
+        from(rgba(155, 155, 155, 0.1)),
+        to(rgba(255, 255, 255, 0.5)),
+        color-stop(.5,rgba(155, 155, 155, 0.2)),
+        color-stop(.5,rgba(255, 255, 255, 0.1))
+    );
+    border-radius: 8px;
+    opacity: .8;
+    height: 64px;
+}
+div#title{
+    font-size:10pt;
+    font-weight:bold;
+    line-height:1.2em;
+    width:100px;
+    overflow:hidden;
+}
+div#credit{
+    bottom:2px;
+    font-size:12pt;
+    font-weight:bold;
+    line-height:12pt;
+    overflow:hidden;
+}
+div#slider{
+    position:relative;
+    width:252px;
+    height:40px;
+}
+div#bar {
+    position:relative;
+    height:3px;
+    top:11px;
+    background:#ccc;
+}
+input#button {
+    position:absolute;
+    width:20px;
+    height:20px;
+}
+</style>
+<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
+<script src="http://code.jquery.com/jquery-1.8.2.min.js"></script>
+<script>
+ /*
+  * Copyright (c) 2012, Yahoo Japan Corporation. All rights reserved.
+  * Copyrights licensed under the MIT License.
+  * See the accompanying LICENSE file for terms. */
+window.onload = function() {
+    // 地図表示
+    var map = new Y.Map('map', {
+        configure : {
+            scrollWheelZoom : true
+        }
+    });
+    map.drawMap(new Y.LatLng(35.634629, 139.87997), 14, Y.LayerSetId.NORMAL);
+
+    // 雨雲レーダーレイヤー
+    var weather = new Y.WeatherMapLayer({
+        'opacity': 0.6
+    });
+    weather.setAnimationUpdateCallback(function() {
+        var t = weather.getAnimationTimeShift();
+        var x = (t + 7200000) / 10800000 * 252;
+        setBar(x);
+    });
+    weather.setAnimationFinishCallback(function() {
+        $('#play').attr('disabled', false);
+        $('#stop').attr('disabled', true);
+    });
+    weather.setDispTime(true);
+    weather.startAutoUpdate();
+    map.addLayer(weather);
+
+    // リサイズ(回転)の時に地図更新
+    $(window).resize(function() {
+        map.updateSize();
+    });
+    var dragging = false;
+    var sliderTouchStart = function(e) {
+        setTimeShift(e);
+        dragging = true;
+    };
+    var sliderTouchMove = function(e) {
+        if (dragging) {
+            setTimeShift(e);
+            return false;
+        }
+    };
+    var sliderTouchEnd = function(e) {
+        dragging = false;
+    };
+    var playButtonTouch = function() {
+        weather.startAnimation({
+            'step': 300000
+        });
+        $(this).attr('disabled', true);
+        $('#stop').attr('disabled', false);
+    };
+    var stopButtonTouch = function() {
+        weather.stopAnimation();
+        $(this).attr('disabled', true);
+        $('#play').attr('disabled', false);
+    };
+    var setTimeShift = function(e) {
+        var x = (typeof e.pageX === "undefined") ? e.originalEvent.touches[0].pageX: e.pageX;
+        x -= $('#slider').offset().left;
+        weather.setAnimationTimeShift(10800000 / 252 * x - 7200000);
+        setBar(x);
+    }
+    var setBar = function(x) {
+        if (x > 252) x = 252;
+        if (x < 0) x = 0;
+        $('#button').css('left', (x - 10) + 'px');
+    }
+    var slider = $('#slider');
+    slider.bind('mousedown', sliderTouchStart);
+    slider.bind('mousemove', sliderTouchMove);
+    $(window).bind('mouseup', sliderTouchEnd);
+    slider.bind('touchstart', sliderTouchStart);
+    slider.bind('touchmove', sliderTouchMove);
+    $(window).bind('touchend', sliderTouchEnd);
+    $('#play').bind('click', playButtonTouch);
+    $('#play').bind('touchstart', playButtonTouch);
+    $('#stop').bind('click', stopButtonTouch);
+    $('#stop').bind('touchstart', stopButtonTouch);
+    $('#stop').attr('disabled', true);
+};
+</script>
+</head>
+<body>
+<div id="map" style="width:100%; height:100%;"></div>
+<div id="label" style="position:absolute; top:4px; right:4px;">
+    <div id="title">雨雲レーダー
+        <div id="credit">
+            <!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+            <a href="http://developer.yahoo.co.jp/about">
+            <img src="http://i.yimg.jp/images/yjdn/yjdn_attbtn1_125_17.gif" title="Webサービス by Yahoo! JAPAN" alt="Web Services by Yahoo! JAPAN" width="125" height="17" style="position: absolute; border:0; margin:0; top:8px; right:8px;">
+            </a>
+            <!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+        </div>
+    </div>
+    <input id="play" type="button" value="再生">
+    <input id="stop" type="button" value="停止">
+    <div id="slider">
+        <div id="bar"></div>
+        <input id="button" type="button" value="" style="left: -10px">
+    </div>
+</div>
+</body>
+</html>
