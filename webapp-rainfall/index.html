@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>雨フル？タッチ</title>
+<style type="text/css">
+html, body {
+    width: 100%; height: 100%;
+}
+html, body, div{
+	margin: 0; padding: 0;
+}
+div.panel { 
+    font-size: 9pt;
+    z-index: 2;
+    padding: 0px;
+    overflow: hidden;
+    color: #fff;
+    background-color: #000;
+    background-image: -webkit-gradient(
+        linear,
+        0% 0%,
+        0% 100%,
+        from(rgba(155, 155, 155, 0.1)),
+        to(rgba(255, 255, 255, 0.5)),
+        color-stop(.5,rgba(155, 155, 155, 0.2)),
+        color-stop(.5,rgba(255, 255, 255, 0.1))
+    );
+    border-radius: 8px;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 85px;
+    opacity: .9;
+}
+div.warea {
+    width: 14%;
+    height: 60px;
+    float: left;
+    align: center;
+    overflow: hidden;
+}
+div.wdata {
+    height: 40px;
+    width: 80%;
+    background-color: white;
+    color: black;
+    font-size: 18px;
+    text-align: center;
+    align: center;
+    border: solid 2px;
+    border-color: #ffffff;
+}
+div.wdate {
+    height: 20px;
+}
+</style>
+<script type="text/javascript" charset="utf-8" src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script type="text/javascript">
+ /*
+  * Copyright (c) 2012, Yahoo Japan Corporation. All rights reserved.
+  * Copyrights licensed under the MIT License.
+  * See the accompanying LICENSE file for terms. */
+var map;
+var weather;
+var latlng = new Y.LatLng(35, 135);
+
+window.onload = function() {
+    // 地図表示
+    map = new Y.Map('map', {
+        configure : {
+            scrollWheelZoom: true,
+            enableFlickScroll: false
+        }
+    });
+    map.drawMap(latlng, 10, Y.LayerSetId.NORMAL);
+
+    // 現在地に移動
+    setNowPoint();
+
+    //天気レイヤ作成
+    weather = new Y.WeatherMapLayer({
+        "opacity": 0.6
+    });
+    weather.startAutoUpdate(); //自動更新
+    weather.setDispTime(true); //時刻表示
+    weather.setUpdateCallback(getWeatherData); //コールバック関数
+    map.addLayer(weather);
+
+    // 地図をタップした時に clickMap() を呼びだす
+    map.bind('click', clickMap);
+
+    // リサイズ(回転)の時に地図更新
+    $(window).resize(function() {
+        map.updateSize();
+    });
+};
+
+// Geolocation API を使って現在地を取得して移動
+function setNowPoint() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(pos) {
+            pos = new Y.LatLng(pos.coords.latitude, pos.coords.longitude);
+            map.panTo(pos);
+            clickMap(pos);
+            latlng = pos;
+        }, null, {
+            enableHighAccuracy: true, timeout: 3000, maximumAge: 0
+        });
+    }
+}
+
+// タップイベント設定
+function clickMap(pos) {
+    latlng = pos;
+    // タイムシフト値を設定
+    setTimeShift(0);
+    // アイコン表示
+    map.clearFeatures();
+    var marker = new Y.Marker(latlng);
+    map.addFeature(marker);
+    // 住所を検索
+    searchAddress();
+}
+
+// タイムシフト値を設定
+function setTimeShift(time){
+    var wArea = $('.warea').get();
+    for (var i = 0; i < 7; i ++) {
+        var wData = $('.wdata', $(wArea[i]));
+        if (i * 10 == time) {
+            wData.css({
+                'margin-top':'2px',
+                'border-color': '#ff0000'
+            });
+        } else {
+            wData.css({
+                'margin-top':'0px',
+                'border-color': '#ffffff'
+            });
+        }
+    }
+    // タイムシフト値が0の場合のみ自動更新する
+    if (time === 0) {
+        weather.startAutoUpdate();
+    } else {
+        weather.stopAutoUpdate();
+    }
+    weather.setTimeShift(time * 60000);
+    weather.updateWeather();
+}
+
+// 住所を検索
+function searchAddress(){
+    var request = {"latlng": latlng};
+    var geocoder = new Y.GeoCoder();
+    geocoder.execute(request, function(ydf) {
+        if (ydf.features.length >= 1) {
+            var feature = ydf.features[0];
+            if (feature.property.AddressElement) {
+                var saddress = feature.property.Address;
+                $('#rainfall').html(saddress + ' の降水強度予測値(mm/h)<br><br>');
+            }
+        }
+    });
+}
+
+// 気象情報APIを使って降水強度予測値を取得
+function getWeatherData() {
+    // タイムシフト値が0の場合のみ取得する
+    if (weather.getTimeShift() !== 0) {
+        return;
+    }
+    var url = "http://weather.olp.yahooapis.jp/v1/place";
+    var time = weather.getNowDate();
+    var coordinates = latlng.Lon + "," + latlng.Lat;
+    var param = {
+        appid       : "YourApplicationId",
+        output      : "json",
+        date        : time,
+        coordinates : coordinates
+    };
+    $.ajax({
+        "url"       : url,
+        "data"      : param,
+        "dataType"  : "jsonp",
+        "success"   : function(result){
+                          var ydf = new Y.YDF(result); 
+                          dispWether(result);
+                      },
+        "error"     : function(){
+                      }
+    });
+}
+
+//降水強度予測値を表示
+function dispWether(data) {
+    var feature = data.Feature[0];
+    if (data.ResultInfo.Count > 0) {
+        //リスト作成
+        var aryRainfall = new Array(7);
+        for (var i = 0; i < 7; i ++) {
+            aryRainfall[i] = feature.Property.WeatherList.Weather[i].Rainfall;
+        }
+        var wArea = $('.warea').get();
+        var date = weather.getNowDate();
+        date = date.substring(8, 12);
+        for (var i = 0; i < 7; i ++) {
+            var wData = $('.wdata', $(wArea[i]));
+            if (aryRainfall[i] <= 0.0 ){
+                wData.css({
+                    'background-color': 'white'
+                });
+            } else if (aryRainfall[i] > 0.0 && aryRainfall[i] < 1.0) {
+                wData.css({
+                    'background-color': '#CCFFFF'
+                });
+            } else if (aryRainfall[i] >= 1.0 && aryRainfall[i] < 2.0) {
+                wData.css({
+                    'background-color': '#66FFFF'
+                });
+            } else if (aryRainfall[i] >= 2.0 && aryRainfall[i] < 4.0) {
+                wData.css({
+                    'background-color': '#00CCFF'
+                });
+            } else if (aryRainfall[i] >= 4.0 && aryRainfall[i] < 8.0) {
+                wData.css({
+                    'background-color': '#0099FF'
+                });
+            } else if (aryRainfall[i] >= 8.0 && aryRainfall[i] < 12.0) {
+                wData.css({
+                    'background-color': '#3366FF'
+                });
+            } else if (aryRainfall[i] >= 12.0 && aryRainfall[i] < 16.0) {
+                wData.css({
+                    'background-color': '#33FF00'
+                });
+            } else if (aryRainfall[i] >= 16.0 && aryRainfall[i] < 24.0) {
+                wData.css({
+                    'background-color': '#33CC00'
+                    });
+            } else if (aryRainfall[i] >= 24.0 && aryRainfall[i] < 32.0) {
+                wData.css({
+                    'background-color': '#199900'
+                });
+            } else if (aryRainfall[i] >= 32.0 && aryRainfall[i] < 40.0) {
+                wData.css({
+                    'background-color': '#FFFF00'
+                    });
+            } else if (aryRainfall[i] >= 40.0 && aryRainfall[i] < 48.0) {
+                wData.css({
+                    'background-color': '#FFCC00'
+                });
+            } else if (aryRainfall[i] >= 48.0 && aryRainfall[i] < 56.0) {
+                wData.css({
+                    'background-color': '#FF9900'
+                });
+            } else if (aryRainfall[i] >= 56.0 && aryRainfall[i] < 64.0) {
+                wData.css({
+                    'background-color': '#FF0000'
+                });
+            } else if (aryRainfall[i] >= 64.0 && aryRainfall[i] < 80.0) {
+                wData.css({
+                    'background-color': '#B70014'
+                });
+            } else if (aryRainfall[i] >= 80.0) {
+                wData.css({
+                    'background-color': '#ff3366'
+                });
+            } else{
+                wData.css({
+                    'background-color': 'white'
+                });
+            }
+            wData.html(aryRainfall[i]);
+
+            var date = feature.Property.WeatherList.Weather[i].Date;
+            var h = date.substring(8, 10);
+            var m = date.substring(10, 12);
+            var wDate = $('.wdate', $(wArea[i]));
+            wDate.html(h + ":" + m);
+        }
+    }
+}
+</script>
+</head>
+<body>
+<div id="map" style="width:100%; height:100%;"></div>
+<div class="panel">
+    <div style="margin-left:5px;">
+        <div id="rainfall" style="margin-top:5px; margin-left:5px; height:20px;"></div>
+    </div>
+    <div style = " width:90%; height:60px; margin:0 auto;">
+        <div class="warea" >
+            <div class="wdata" onClick="setTimeShift(0)"></div>
+            <div class="wdate"></div>
+        </div>
+        <div class="warea"  >
+            <div class="wdata" onClick="setTimeShift(10)"></div>
+            <div class="wdate"></div>
+        </div>
+        <div class="warea" >
+            <div class="wdata" onClick="setTimeShift(20)"></div>
+            <div class="wdate"></div>
+        </div>
+        <div class="warea" >
+            <div class="wdata" onClick="setTimeShift(30)"></div>
+            <div class="wdate"></div>
+        </div>
+        <div class="warea" >
+            <div class="wdata" onClick="setTimeShift(40)"></div>
+            <div class="wdate"></div>
+        </div>
+        <div class="warea" >
+            <div class="wdata" onClick="setTimeShift(50)"></div>
+            <div class="wdate"></div>
+        </div>
+        <div class="warea" >
+            <div class="wdata" onClick="setTimeShift(60)"></div>
+            <div class="wdate"></div>
+        </div>
+    </div>
+</div>
+<div id="credit">
+    <!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+    <a href="http://developer.yahoo.co.jp/about">
+    <img src="http://i.yimg.jp/images/yjdn/yjdn_attbtn1_125_17.gif" title="Webサービス by Yahoo! JAPAN" alt="Web Services by Yahoo! JAPAN" width="125" height="17" style="position: absolute; border:0; margin:0; bottom:27px; right:2px;">
+    </a>
+    <!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+</div>
+</body>
+</html>

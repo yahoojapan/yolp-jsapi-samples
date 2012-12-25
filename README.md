@@ -122,6 +122,14 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 
 * [YOLP 30分クッキング(SlideShare)](http://www.slideshare.net/techblogyahoo/yolp-30)
 
+### webapp-rainfall
+
+株式会社翔泳社が運営するCodeZineへ寄稿した[地図をタッチして雨の強さをチェック！ YOLPで作る簡単便利地図アプリ](http://codezine.jp/article/detail/6921)という記事に書かれた、Yahoo! JavaScriptマップAPIを利用して作るWebアプリケーションのサンプルコードです。
+
+地図をタッチするとその場所の1時間後までの雨の強さを表す降水強度予測を確認することができるWebアプリです。
+
+このサンプルコードはiPhone Safariブラウザ、Android標準ブラウザに最適化されています。
+
 ### webapp-routesearch-weather
 
 株式会社翔泳社が運営するCodeZineへ寄稿した[ルートを探しながら雨雲をチェック！ YOLPで作る簡単便利地図アプリ](http://codezine.jp/article/detail/6837)という記事に書かれた、Yahoo! JavaScriptマップAPIを利用して作るWebアプリケーションのサンプルコードです。
