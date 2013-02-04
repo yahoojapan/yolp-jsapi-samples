@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no">
+<title>今っぷ！</title>
+<style type="text/css">
+html, body {
+    width: 100%; height: 100%;
+}
+html, body, div{
+	margin: 0; padding: 0;
+}
+div.panel { 
+    font-size: 9pt;
+    z-index: 2;
+    overflow: hidden;
+    color: #fff;
+    background-color: #000;
+    border-radius: 8px;
+    position: absolute;
+    left:3px;
+    top: 3px;
+    opacity: 0.8;
+}
+</style>
+<script type="text/javascript" src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
+<script src="http://code.jquery.com/jquery-1.8.3.js"></script>
+<script type="text/javascript">
+ /*
+  * Copyright (c) 2013, Yahoo Japan Corporation. All rights reserved.
+  * Copyrights licensed under the MIT License.
+  * See the accompanying LICENSE file for terms. */
+var map;                      //地図オブジェクト
+var stylemaplayer;            //スタイル地図レイヤー
+var RouteSearchlayer;         //経路探索レイヤー
+var altitude_API=0;           //標高情報
+var altitude_GPS=0;           //標高情報
+var state="bold";             //地図の状態
+var now_latitude=35.66572;    //現在地の緯度
+var now_longitude=139.73100;  //現在地の経度
+var icon;                     //現在地マーカー用アイコン
+var my_marker;                //現在地マーカー
+var APPID="YourApplicationId"; //アプリケーションID
+var weather_result=null;      //気象情報の結果
+var eat_time=false;           //ローカルサーチ対象時間内かどうか
+
+//回転が起こった際の再描画
+window.onresize = function() {
+    map.updateSize();
+}
+
+window.onload = function() {
+    //地図の初期状態
+    map = new Y.Map("map",{configure : {scrollWheelZoom : true}});   //スクロールによるzoom機能を設定
+    stylemaplayer = new Y.StyleMapLayer("bold");
+    var layerset = new Y.LayerSet("スタイル地図", [stylemaplayer]);
+    map.addLayerSet("stylemap",layerset);
+    map.bind("moveend", function(){change_center(true);});
+    map.drawMap(new Y.LatLng(now_latitude,now_longitude), 15 , "stylemap");
+
+    //現在地用のアイコンの登録
+    icon = new Y.Icon('http://i.yimg.jp/images/map/yolp/misc/107_pin07.png',{iconAnchor : new Y.Point(54,50)});
+    map.addControl(new Y.CenterMarkControl());
+    my_marker = new Y.Marker(new Y.LatLng(now_latitude,now_longitude), {icon: icon});
+    map.addFeature(my_marker);
+
+    get_GPS();                                //現在地の取得
+    setInterval(change_center, 1000*60*5);    //時間による地図の再描画
+}
+
+//地図の状態を変更
+var change_center= function(move){
+    var latitude =now_latitude;
+    var longitude =now_longitude;
+    if(move){
+        latitude =map.getCenter().lat();
+        longitude = map.getCenter().lng();
+        //地図がmoveで移動したときのみGPSの高度情報を初期化
+        if(now_latitude!=latitude || longitude!=now_longitude){
+            altitude_GPS=0; 
+        }
+    }
+
+    //時刻の取得
+    var now_totaldate = new Date();
+    var hour = String(now_totaldate.getHours());
+    var min = String(now_totaldate.getMinutes());
+    document.getElementById("time").innerHTML="更新時刻 : "+hour+"時"+min+"分";    //時間の表示
+
+    //地図の更新
+    reverseGeo(latitude,longitude);
+    getWeather(latitude,longitude);
+    getAltitude(latitude,longitude,hour);
+
+    //時刻によるローカルサーチ;
+    if(((hour >= 11) && (hour < 13)) || ((hour >= 18) && (hour < 21))){
+        eat_time=true;
+        if(!RouteSearchlayer){
+            local_search("飲食店",latitude,longitude);
+        }else{
+            map.addLayer(RouteSearchlayer);
+        }
+    }
+    else if(eat_time){
+        eat_time=false;
+        map.clearFeatures();
+        my_marker = new Y.Marker(new Y.LatLng(now_latitude,now_longitude), {icon: icon});
+        map.addFeature(my_marker);
+    }
+}
+
+//地図のstyle変更関数
+var change_style=function(hour){
+
+    var style_name=state;
+
+    //時刻による地図のスタイルの指定
+    if((hour < 4) || (hour >= 20)){
+            style_name = "midnight";        //ミッドナイトに変更
+    }else if((hour >=16) && (hour < 20)){
+            style_name = "orange";          //オレンジに変更
+    }else if((hour >= 4) && (hour < 10)){
+            style_name = "blue";           //ブルーに変更
+    }else{
+            style_name = "bold";            //ボールドに変更
+    }
+    //地形図の判定
+    if(altitude_API>500){
+        style_name = "topographic";
+    }
+    //GPSの高度情報から地図を切り替え(航空写真の判定)
+    if((altitude_GPS-altitude_API) > 20 ){
+        style_name = "photo";
+    }
+
+    // 地図の変更
+    if (state !== style_name) {
+        if (state === "photo") {
+            map.setConfigure("hybridPhoto",false);
+            stylemaplayer.base = style_name;
+            map.setLayerSet("stylemap");
+        } else if (style_name === "photo") {
+            map.setConfigure("hybridPhoto",true);
+            map.setLayerSet(Y.LayerSetId.PHOTO);
+        } else {
+            stylemaplayer.base = style_name;
+            stylemaplayer.redraw();
+        }
+        state = style_name;
+    }
+
+    // 表示の変更
+    var display_name = "";
+    switch (style_name) {
+    case "blue":
+        display_name = "ブルー";
+        break;
+    case "bold":
+        display_name = "ボールド";
+        break;
+    case "orange":
+        display_name = "オレンジ";
+        break;
+    case "midnight":
+        display_name = "ミッドナイト";
+        break;
+    case "topographic":
+        display_name = "地形図";
+        break;
+    case "photo":
+        display_name = "航空写真";
+        break;
+    break;
+    }
+    document.getElementById("map_kind").innerHTML="現在の地図 : " + display_name;
+}
+
+//GPS情報の取得
+var get_GPS = function(){
+    navigator.geolocation.getCurrentPosition(
+        function(result){
+            //現在地情報の更新
+            latitude=result.coords.latitude;
+            longitude=result.coords.longitude;
+            now_latitude=result.coords.latitude;
+            now_longitude=result.coords.longitude;
+            if(result.coords.altitude){
+                altitude_GPS=result.coords.altitude;
+            }
+            //地図と現在地の更新
+            map.panTo(new Y.LatLng(now_latitude,now_longitude),false);
+            map.removeFeature(my_marker);
+            my_marker = new Y.Marker(new Y.LatLng(now_latitude,now_longitude), {icon: icon});
+            map.addFeature(my_marker);
+        },
+        function(){},
+        {enableHighAccuracy: true,timeout: 5000});
+}
+
+//各種APIの利用
+//リバースジオコーダ
+var reverseGeo=function(lat,lon){
+    var geocoder = new Y.GeoCoder();
+    geocoder.execute( { latlng : new Y.LatLng(lat,lon) },
+    function(result){
+        //リバースジオコーディング結果を表示
+        if (result.features[0] && result.features[0].property.Address) {
+            document.getElementById('position').innerHTML = "中心位置 : "+result.features[0].property.Address;
+        }else{
+            document.getElementById('position').innerHTML = "中心位置 : 該当なし";
+        }
+    });
+}
+//ローカルサーチ
+var local_search=function(keyword,lat,lon){
+    var local = new Y.LocalSearch();
+    var cid = "d8a23e9e64a4c817227ab09858bc1330";        //カセットID
+    var options = {"dist":"1","results":10,"lat":lat,"lon":lon};
+    local.search(keyword, cid, options,
+    function(result){
+        map.clearFeatures();
+        my_marker = new Y.Marker(new Y.LatLng(now_latitude,now_longitude), {icon: icon});
+        map.addFeature(my_marker);
+        //マーカーを立てる。
+        for(var i=0; i < result.features.length; i++){
+            result.features[i].bind("click",function(){root_search(this.getLatLng())} );
+            map.addFeature(result.features[i]);
+        }
+    });
+}
+//気象情報
+var getWeather=function(lat,lon) {
+    var url = "http://weather.olp.yahooapis.jp/v1/place";
+    var coordinates = lon + "," + lat;
+    var param = {
+        appid       : APPID,
+        output      : "json",
+        coordinates : coordinates
+    };
+    $.ajax({
+        "url"       : url,
+        "data"      : param,
+        "dataType"  : "jsonp",
+        "success"   : function(result){
+                          weather_result=result.Feature[0];
+                          //雨雲レーダーの追加
+                          if(weather_result){
+                              var rainy = false;
+                              for (var i = 0; i < 7; i ++) {
+                                  if(weather_result.Property.WeatherList.Weather[i].Rainfall > 0.1){
+                                      rainy = true;
+                                      break;
+                                  }
+                              }
+                              map.setConfigure('weatherOverlay', rainy);
+                              document.getElementById("weather").innerHTML = ((rainy) ? "雨雲レーダー情報 : あり" : "雨雲レーダー情報 : なし");
+                          }
+                      }
+    });
+}
+//標高情報
+var getAltitude=function(lat,lon,hour) {
+    // タイムシフト値が0の場合のみ取得する
+    var url = "http://alt.search.olp.yahooapis.jp/OpenLocalPlatform/V1/getAltitude";
+    var coordinates = lon + "," + lat;
+    var param = {
+        appid       : APPID,
+        output      : "json",
+        coordinates : coordinates
+    };
+    $.ajax({
+        "url"       : url,
+        "data"      : param,
+        "dataType"  : "jsonp",
+        "success"   : function(result){
+                          var feature = result.Feature[0];
+                          if ((result.ResultInfo.Count > 0)) {
+                              altitude_API=feature.Property.Altitude;
+                              document.getElementById("altitude").innerHTML="標高 : "+altitude_API+"m";    //標高の表示
+                          }
+                          change_style(hour);
+                      }
+    });
+}
+//経路探索
+var root_search=function(g_latlon){
+    if(RouteSearchlayer){
+        map.removeLayer(RouteSearchlayer);
+    }
+    var latlons= [new Y.LatLng(now_latitude, now_longitude),g_latlon ];
+    var config={
+        "useCar":"false",
+        "useTollway":"false"
+    };
+    RouteSearchlayer = new Y.RouteSearchLayer();
+    map.addLayer(RouteSearchlayer);
+    RouteSearchlayer.execute(latlons,config);
+}
+//探索した経路削除用関数
+var remove_root=function(){
+    if(RouteSearchlayer){
+        RouteSearchlayer.clearRoute();
+        RouteSearchlayer=null;
+    }
+}
+</script>
+</head>
+<body>
+<div id="map" style="width:100%; height:100%"></div>
+<div class="panel">
+    <div id="time" style="padding: 2px;"></div>
+    <div id="position" style="padding: 2px;"></div>
+    <div id="map_kind" style="padding: 2px;"></div>
+    <div id="altitude" style="padding: 2px;"></div>
+    <div id="weather" style="padding: 2px;"></div>
+    <input type="button" value="現在地更新" onclick="get_GPS()">
+    <input type="button" value="ルートの削除" onclick="remove_root()">
+</div>
+<div id="credit">
+    <!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+    <a href="http://developer.yahoo.co.jp/about">
+    <img src="http://i.yimg.jp/images/yjdn/yjdn_attbtn1_125_17.gif" title="Webサービス by Yahoo! JAPAN" alt="Web Services by Yahoo! JAPAN" width="125" height="17" style="position: absolute; border:0; margin:0; bottom:20px; left:2px;">
+    </a>
+    <!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+</div>
+</body>
+</html>

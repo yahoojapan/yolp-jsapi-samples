@@ -94,6 +94,14 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 
 東京23区のうち、選択された地点を中心とするショップ情報分布をヒートマップで表示します。
 
+### webapp-imap
+
+株式会社翔泳社が運営するCodeZineへ寄稿した[状況に応じて地図の様子が自動で変わる！YOLPで作る簡単便利地図アプリ 「今っぷ！」](http://codezine.jp/article/detail/6969)という記事に書かれた、Yahoo! JavaScriptマップAPIを利用して作るWebアプリケーションのサンプルコードです。
+
+地図の中心位置や利用時刻に応じて地図の状態が自動的に変化するWebアプリです。
+
+このサンプルコードはiPhone Safariブラウザ、Android標準ブラウザに最適化されています。
+
 ### webapp-measure-distance
 
 株式会社翔泳社が運営するCodeZineへ寄稿した[YOLP Hacks： APIの使い方～現在位置の常時表示／地図をなぞって距離を計測](http://codezine.jp/article/detail/5907)という記事に書かれた、Yahoo! JavaScriptマップAPIを利用して作るWebアプリケーションのサンプルコードです。
