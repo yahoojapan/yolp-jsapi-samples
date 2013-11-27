@@ -159,5 +159,5 @@ Yahoo! Open Local Platformチームでは、次の場所で開発者サポート
 
 * [Yahoo!グループ: Yahoo!地図Web API](http://groups.yahoo.co.jp/group/YJDN-map/)
     * 投稿にはYahoo! JAPAN IDが必要です。
-* [@yahoojpYOLP](https://twitter.com/#!/yahoojpYOLP)
+* [@YahoojpMap](https://twitter.com/YahoojpMap)
     * 投稿にはTwitter IDが必要です。
