@@ -58,7 +58,7 @@ div.wdate {
     height: 20px;
 }
 </style>
-<script type="text/javascript" charset="utf-8" src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid="></script>
+<script type="text/javascript" charset="utf-8" src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
 <script src="http://code.jquery.com/jquery-1.8.3.js"></script>
 <script type="text/javascript">
  /*
@@ -179,7 +179,7 @@ function getWeatherData() {
     var time = weather.getNowDate();
     var coordinates = latlng.Lon + "," + latlng.Lat;
     var param = {
-        appid       : "",
+        appid       : "YourApplicationId",
         output      : "json",
         date        : time,
         coordinates : coordinates

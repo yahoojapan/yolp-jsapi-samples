@@ -45,10 +45,6 @@ Yahoo!デベロッパーネットワークで[アプリケーションIDを登�
 各サンプルコードの概要
 ----------------------
 
-### template
-
-テンプレート
-
 ### usage-blankmap-areapolygon
 
 [白地図レイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#BlankMapLayer)の使い方を紹介したサンプルコードです。
@@ -91,11 +87,6 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 [雨雲レーダーレイヤー](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#WeatherMapLayer)の使い方を紹介したサンプルコードです。
 
 雨雲レーダーのアニメーション表示ができます。
-
-### webapp-cassette-search
-
-[カセットサーチAPI](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/cassetteSearch.html)の使い方を紹介したサンプルコードです。
-
 
 ### webapp-distribution-mcdonalds
 

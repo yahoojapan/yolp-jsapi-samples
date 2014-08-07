@@ -53,7 +53,7 @@ div#desc{
 <div id="desc">always I'm lovin'it</div>
 </div>
 </div>
-<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid="></script>
+<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script>
  /*
@@ -84,7 +84,7 @@ jQuery(document).ready(function($){
             url: "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/localSearch",
             dataType: "jsonp",
             data:{
-                appid: "",
+                appid: "YourApplicationId",
                 cid: "d115e2a62c8f28cb03a493dc407fa03f",
                 results: 1,
                 lat: latlng.lat(),
