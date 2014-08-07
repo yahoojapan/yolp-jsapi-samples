@@ -88,6 +88,11 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 
 雨雲レーダーのアニメーション表示ができます。
 
+### webapp-cassette-search
+
+[カセットサーチAPI](http://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/cassetteSearch.html)の使い方を紹介したサンプルコードです。
+
+
 ### webapp-distribution-mcdonalds
 
 株式会社翔泳社が運営するCodeZineへ寄稿した[YOLP Hacks：API群を組み合わせてオリジナルWebアプリケーションを作る](http://codezine.jp/article/detail/6103)という記事に書かれた、Yahoo! JavaScriptマップAPIを利用して作るWebアプリケーションのサンプルコードです。
@@ -145,6 +150,10 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 現在地から指定した場所へのルート検索を行いつつ、ルート上の雨雲状況をビジュアルにチェックできるスマホ・タブレット用のWebアプリです。
 
 このサンプルコードはiPhone Safariブラウザ、Android標準ブラウザに最適化されています。
+
+### webapp-template-2014-hacku
+
+同志社大学HackUのYOLPチュートリアルで使用したテンプレートです。
 
 
 ライセンス
