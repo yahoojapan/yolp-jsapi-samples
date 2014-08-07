@@ -32,7 +32,7 @@ div#panel {
     opacity: .7;
 }
 </style>
-<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
+<script src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid="></script>
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script type="text/javascript">
  /*
@@ -76,7 +76,7 @@ function zipsearch() {
     // 郵便番号検索
     var url = "http://search.olp.yahooapis.jp/OpenLocalPlatform/V1/zipCodeSearch";
     var param = {
-        appid: "YourApplicationId",
+        appid: "",
         output: "json",
         query: $("#zip").val()
     };

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <script type="text/javascript" charset="UTF-8"
+        src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=">
+    </script>
+    <script type="text/javascript" charset="UTF-8" 
+        src="http://i.yimg.jp/images/commerce/js/libs/jquery/core/1.10.2/jquery.min.js">
+    </script>
+    <style type="text/css">
+#contents {
+    width: 1000px;
+    height: 500px;
+}
+#list {
+    width: 498px;
+    height: 498px;
+    border: 1px solid #000000;
+    float: left;
+}
+#list_header {
+    width: 100%;
+    height: 20px;
+}
+#list_body {
+    width: 100%;
+    height: 478px;
+    overflow-y: scroll;
+}
+.cassette_title {
+    background-color: #999999;
+    color: #ffffff;
+}
+.cassette_contents {
+    margin: 3px;
+}
+.cassette_contents_id {
+    font-size: 10px;
+}
+.cassette_contents_desc {
+    padding: 3px 5px;
+    background-color: #ffb6c1;
+    font-size: 10px;
+}
+.cassette_contents_button {
+    text-align: right;
+}
+#map {
+    width: 500px;
+    height: 500px;
+    float: left;
+}
+    </style>
+</head>
+<body>
+    <h1>YOLPカセット検索APIサンプル</h1>
+    <div id="contents">
+        <div id="list">
+            <div id="list_header">
+                <input type="button" value="&lt;&lt;" onclick="get_cassettes_prev();return false;" />
+                &nbsp;&nbsp;&nbsp;
+                <span id="cassette_total">--</span>件中、
+                <span id="cassette_start">--</span>〜
+                <span id="cassette_end">--</span>件を表示中
+                &nbsp;&nbsp;&nbsp;
+                <input type="button" value="&gt;&gt;" onclick="get_cassettes_next();return false;">
+            </div>
+            <div id="list_body">
+                <dl>
+                </dl>
+            </div>
+        </div>
+<script>
+// いま表示中のカセットリストの位置
+var _result = {
+    "total": 0,
+    "count": 0,
+    "start": 0
+}
+
+get_cassettes(1);
+
+/**
+ *  次の10件のカセットを取得
+ */
+function get_cassettes_next() {
+    if (_result.total > _result.count + _result.start - 1) {
+        get_cassettes(_result.start+10);
+    }
+}
+
+/**
+ *  前の10件のカセットを取得
+ */
+function get_cassettes_prev() {
+    if (_result.start - 10 <= 0) {
+        get_cassettes(1);
+    } else {
+        get_cassettes(_result.start-10)
+    }
+}
+
+/**
+ *  カセット検索APIをたたいて、指定位置から10件分のカセットリストを取得する
+ */
+function get_cassettes(start) {
+    
+    var parent = $("#list_body dl");
+    parent.empty();
+    
+    $.ajax({
+        "type": "GET",
+        "url": "http://cassette.search.olp.yahooapis.jp/OpenLocalPlatform/V1/cassetteSearch",
+        "data": {
+            "appid": "",
+            "output": "json",
+            "start": start,
+            "results": 10
+        },
+        "dataType": "jsonp",
+        "success": function(json) {
+            
+            if (typeof json.ResultInfo === "undefined" || Number(json.ResultInfo.Count) === 0) {
+                return;
+            }
+            
+            _result.count = Number(json.ResultInfo.Count);
+            _result.total = Number(json.ResultInfo.Total);
+            _result.start = Number(json.ResultInfo.Start);
+            
+            $("#cassette_total").html(_result.total);
+            $("#cassette_start").html(_result.start);
+            $("#cassette_end").html(_result.start + _result.count - 1);
+            
+            for (var i=0; i<json.Feature.length; ++i) {
+                var feature = json.Feature[i];
+                var id = feature.Id;
+                var name = escapeHTML(feature.Name);
+                var desc = escapeHTML(feature.Description);
+                
+                parent.append(
+                    "<dt class=\"cassette_title\">"+name+"</dt>"
+                    + "<dd class=\"cassette_contents\">"
+                    + "<div class=\"cassette_contents_id\">カセットID："+id+"</div>"
+                    + "<div class=\"cassette_contents_desc\">"+desc+"</div>"
+                    + "<div class=\"cassette_contents_button\">"
+                    + "<input"
+                    + " type=\"button\""
+                    + " value=\"このカセットを見る\""
+                    + " onclick=\"show_cassette('"+id+"');return false;\""
+                    + " />"
+                    + "</div>"
+                    + "</dd>"
+                );
+            }
+        }
+    });
+    
+}
+
+/**
+ *  文字列をエスケープする
+ */
+function escapeHTML(str) {
+  return str.replace(/[&<>"']/g,
+    function($0){
+      return escapeHTML.dic[$0]
+    }
+  );
+}
+escapeHTML.dic = {
+  "&":"&amp;",
+  "<":"&lt;",
+  ">":"&gt;",
+  '"':"&quot;",
+  "'":"&#039;"
+};
+</script>
+        <div id="map"></div>
+<script>
+// 選択中のカセットID
+var _currentCid = null;
+
+// 地図の描画
+var _map = new Y.Map("map");
+_map.drawMap(new Y.LatLng(34.69389000,135.50204576),14,Y.LayerSetId.Normal);
+_map.addControl(new Y.SliderZoomControlVertical());
+_map.bind("moveend", function(){
+    // 地図が動いたら店舗を検索
+    search_poi();
+});
+// 店舗マーカーを表示するレイヤーの追加
+var _layer = new Y.FeatureLayer();;
+_map.addLayer(_layer);
+
+/**
+ *  選択中のカセットの店舗を地図の中心から10件取得
+ */
+function search_poi() {
+    _layer.clearFeatures();
+    
+    if (_currentCid === null) {
+        return;
+    }
+    
+    var option = {
+        "sort": "hybrid",
+        "lat": _map.getCenter().lat(),
+        "lon": _map.getCenter().lng(),
+        "dist": 50,
+        "results": 100
+    };
+    new Y.LocalSearch().search("",_currentCid,option,function(ydf){
+        if (ydf.features.length > 0) {
+            _layer.addFeatures(ydf.features);
+        }
+    });
+}
+
+/**
+ *  選択中のカセットの変更
+ *  最初の1件目の位置に地図を移動する。
+ *  ＃1件目の位置に移動したあと、moveendイベントが発生し、search_poiが実行される。
+ */
+function show_cassette(cid) {
+    _currentCid = cid;
+    
+    var option = {
+        "results": 1
+    };
+    new Y.LocalSearch().search("",_currentCid,option,function(ydf){
+        if (ydf.features.length > 0) {
+            _map.panTo(ydf.features[0].getLatLng());
+        } else {
+            alert("店舗がありません。別のカセットを選択してください。");
+        }
+    });
+}
+
+</script>
+    </div>
+    <p>
+        <!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+        <a href="http://developer.yahoo.co.jp/about">
+        <img src="http://i.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" style="border:0; margin:15px 15px 15px 15px;"></a>
+        <!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+    </p>
+</body>
+</html>

@@ -22,7 +22,7 @@
 </p>
 </div>
 
-<script charset="utf-8" src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid=YourApplicationId"></script>
+<script charset="utf-8" src="http://js.api.olp.yahooapis.jp/OpenLocalPlatform/V1/jsapi?appid="></script>
 <script charset="utf-8" src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.2.min.js"></script>
 <script>
  /*
@@ -36,7 +36,7 @@ $(function(){
 
     $("#search").submit(function(){
         $.getJSON("http://geo.search.olp.yahooapis.jp/OpenLocalPlatform/V1/geoCoder?callback=?",{
-            appid:"YourApplicationId",
+            appid:"",
             query:this.address.value,
             results:1,
             output:"json"
