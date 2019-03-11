@@ -1,0 +1,111 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+
+<title>ヒートマップを表示する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script type="text/javascript">
+var map;        //YOLP地図オブジェクト（Mapオブジェクト）
+/**
+ * window.onloadイベントにて地図の読込処理を行います。
+ */
+window.onload = function() {
+    map = new Y.Map("map",{"configure":{"scrollWheelZoom":true}});
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.SliderZoomControlHorizontal());
+    //地図を描画します。
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 13, Y.MAP_LAYERSET);
+    //YDF
+    var url = "http://1st.geocities.jp/yjmapstaff/yolp/ydf/geoSearch.xml";
+    //GeoXmlのアイコンとヒートマップを切り替えられるプラグインを作成します
+    var geoxmlplugin = new Y.GeoXmlPlugin(url, {heat:true});
+    //プラグインをマップに追加します。
+    map.addPlugin(geoxmlplugin);
+}
+</script>
+<style>
+h1 {
+	font-size:16px;
+	margin:5px;
+	font-weight:bold;
+}
+.sub-menu {
+    margin:4px;
+    padding:4px;
+    border:1px solid;
+}
+h3 {
+    font-size:14px;
+    margin:2px;
+    padding:2px;
+}
+.slapi {
+    width:600px;
+    height:480px;
+}
+.note {
+	color: #ff0000;
+	font-weight: bold;
+	margin:20px 0px;
+}
+.link {
+    margin:5px 0px;
+    font-size:12px;
+}
+.code {
+    width:600px;
+    height:300px;
+    border: 1px solid #000;
+    overflow-y:scroll;
+    font-size: 11px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+<h1>ヒートマップを表示する</h1>
+<div style="margin:10px 0px;">
+    <p class="link">
+        <a href="https://developer.yahoo.co.jp/sample/map/sample5.html">JavaScriptマップAPIサンプルの一覧に戻る</a>
+    </p>
+    <p class="link">
+        <a href="#srccode">ソースコードを見る</a>
+    </p>
+</div>
+
+<noscript>
+    <div class="note">ブラウザのJavaScriptが無効となっています。正常に動作しない可能性があります。</div>
+</noscript>
+
+<div id="map" style="width:600px; height:480px"></div>
+
+<h3 id="srccode">ソースコード</h3>
+<div class="code">
+<pre>
+var map;        //YOLP地図オブジェクト（Mapオブジェクト）
+/**
+ * window.onloadイベントにて地図の読込処理を行います。
+ */
+window.onload = function() {
+    map = new Y.Map("map",{"configure":{"scrollWheelZoom":true}});
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.SliderZoomControlHorizontal());
+    //地図を描画します。
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 13, Y.MAP_LAYERSET);
+    //YDF
+    var url = "http://1st.geocities.jp/yjmapstaff/yolp/ydf/geoSearch.xml";
+    //GeoXmlのアイコンとヒートマップを切り替えられるプラグインを作成します
+    var geoxmlplugin = new Y.GeoXmlPlugin(url, {heat:true});
+    //プラグインをマップに追加します。
+    map.addPlugin(geoxmlplugin);
+}
+</pre>
+</div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet --> 
+<a href="https://developer.yahoo.co.jp/about"> 
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a> 
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet --> 
+
+</body> 
+</html> 

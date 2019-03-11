@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>ローカルサーチを利用する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+<body>
+<div id="map" style="width:600px; height:480px;"></div>
+<p>検索ボタンを押すと、入力されたキーワードから、電話帳カセットの店舗情報を検索して地図上に表示します。</p>
+<p>
+<input type="text" id="name" value="東京都千代田区" >
+<input type="button" id="submit" value="検索">
+</p>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+
+window.onload = function(){
+
+    var map = new Y.Map("map");
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 16, "map");
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.ZoomControl());
+    map.addControl(new Y.CenterMarkControl());
+    map.addControl(new Y.ScaleControl());
+    
+    // ローカルサーチオブジェクトを生成します
+    var local = new Y.LocalSearch();
+
+    // 検索結果のマーカーを地図に立てる関数を定義します。
+    var search = function(){
+        // 検索キーワード, 電話帳カセットIDを指定します。
+        var keyword = document.getElementById('name').value;
+        var cid  = "d8a23e9e64a4c817227ab09858bc1330";
+        var options = {};
+            
+        var bounds = new Y.LatLngBounds();
+
+        // 入力した値をパラメータとして検索します。
+        local.search(keyword, cid, options, function(result){
+            for (var i=0, len=result.features.length; i<len; i++) {
+                var feature = result.features[i];
+                bounds.extend(feature.latlng);
+            }
+
+            // 結果のYDFを地図に追加して、マーカーを立てます。
+            map.clearFeatures();
+            if(result.features && result.features[0]){
+                map.addFeatures(result.features);
+                map.drawBounds(bounds);
+            }
+        });
+    }
+
+    document.getElementById('submit').onclick = search;
+}
+
+-->
+</script>
+
+</body>
+</html>

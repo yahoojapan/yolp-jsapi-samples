@@ -1,0 +1,203 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+
+<title>白地図を表示する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script type="text/javascript"> 
+var map;        //YOLP地図オブジェクト（Mapオブジェクト）
+var blankmap;   //白地図レイヤー
+/**
+ * window.onloadイベントにて地図の読込処理を行います。
+ */
+window.onload = function() {
+    map = new Y.Map("map",{"configure":{"scrollWheelZoom":true}});
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.SliderZoomControlHorizontal());
+    
+    //白地図レイヤーを作成します。
+    blankmap = new Y.BlankMapLayer();
+    setStyle();
+    //レイヤーセットを作成します。
+    var layerset = new Y.LayerSet("白地図", [blankmap],{"maxZoom":20, "minZoom":11});
+    //Mapオブジェクトにレイヤーセットを追加します。
+    map.addLayerSet("blankmap", layerset);
+    //地図を描画します。
+    map.drawMap(new Y.LatLng(35.6821141786951,139.75630702905684), 11, Y.LayerSetId.NORMAL);
+    //表示を白地図にします。
+    map.setLayerSet( "blankmap" );
+}
+/**
+ * スタイルを設定します。
+ */
+function setStyle() {
+    var styleobj = document.getElementById("style_onoff");
+    var param = styleobj.value;
+    if(param.indexOf(";") != -1) param="";
+    if(param.indexOf("(") != -1) param="";
+    if(param.indexOf(")") != -1) param="";
+    var style = "";
+    if(param != "") eval("style="+param+";");
+    //スタイルを設定します。
+    blankmap.setStyle(style, true);
+}
+</script>
+<style>
+h1 {
+	font-size:16px;
+	margin:5px;
+	font-weight:bold;
+}
+.sub-menu {
+    margin:4px;
+    padding:4px;
+    border:1px solid;
+}
+h3 {
+    font-size:14px;
+    margin:2px;
+    padding:2px;
+}
+.slapi {
+    width:600px;
+    height:480px;
+}
+.note {
+	color: #ff0000;
+	font-weight: bold;
+	margin:20px 0px;
+}
+.link {
+    margin:5px 0px;
+    font-size:12px;
+}
+.code {
+    width:600px;
+    height:300px;
+    border: 1px solid #000;
+    overflow-y:scroll;
+    font-size: 11px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+<h1>白地図を表示する</h1>
+<div style="margin:10px 0px;">
+    <p class="link">
+        <a href="https://developer.yahoo.co.jp/sample/map/sample5.html">JavaScriptマップAPIサンプルの一覧に戻る</a>
+    </p>
+    <p class="link">
+        <a href="#srccode">ソースコードを見る</a>
+    </p>
+</div>
+
+<noscript>
+    <div class="note">ブラウザのJavaScriptが無効となっています。正常に動作しない可能性があります。</div>
+</noscript>
+
+<p style="font-size:12px;font-weight:bold;">【使い方】</p>
+<p style="font-size:12px;">
+「Styleの設定」エリアで、各パラメーターの内容を書き換えて「設定」ボタンを押すと、指定したパラメーター設定を反映した地図が表示されます。<br />
+各パラメーターの詳細については、<a href="https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/reference/YLayer.html#BlankMapLayer">こちら</a>を参照してください。
+</p>
+
+
+<table id="sample">
+<tr>
+    <td class="left" valign="top">
+        <div id="map" style="width:600px; height:480px"></div>
+    </td>
+    <td class="right" valign="top">
+        <h3>▼&nbsp;Styleの設定</h3>
+<textarea id="style_onoff" style="width:240px; height:350px;" wrap="off">
+{
+  "area" : {
+    "default" : "dcdcdc"
+    ,"13101" : "bbbcde"
+    ,"13102" : "b9d08b"
+    ,"13103" : "f6bfbc"
+    ,"13104" : "b9d08b"
+    ,"13105" : "f8e58c"
+    ,"13106" : "f6bfbc"
+    ,"13107" : "f8e58c"
+    ,"13108" : "f6bfbc"
+    ,"13109" : "b9d08b"
+    ,"13110" : "f8e58c"
+    ,"13111" : "f6bfbc"
+    ,"13112" : "b9d08b"
+    ,"13113" : "bbbcde"
+    ,"13114" : "f6bfbc"
+    ,"13115" : "f8e58c"
+    ,"13116" : "bbbcde"
+    ,"13117" : "f6bfbc"
+    ,"13118" : "bbbcde"
+    ,"13119" : "f8e58c"
+    ,"13120" : "b9d08b"
+    ,"13121" : "b9d08b"
+    ,"13122" : "bbbcde"
+    ,"13123" : "b9d08b"
+  },
+  "label" : {
+    "default" : "696969"
+  },
+  "border" : {
+    "default" : "aaa"
+  },
+  "bg" : "b0c4de"
+}
+</textarea><br/>
+<input type="button" onClick="setStyle();" value="設定" /><br/>
+    </td>
+</tr>
+</table>
+
+<h3 id="srccode">ソースコード</h3>
+<div class="code">
+<pre>
+var map;        //YOLP地図オブジェクト（Mapオブジェクト）
+var blankmap;   //白地図レイヤー
+/**
+ * window.onloadイベントにて地図の読込処理を行います。
+ */
+window.onload = function() {
+    map = new Y.Map("map",{"configure":{"scrollWheelZoom":true}});
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.SliderZoomControlHorizontal());
+    
+    //白地図レイヤーを作成します。
+    blankmap = new Y.BlankMapLayer();
+    setStyle();
+    //レイヤーセットを作成します。
+    var layerset = new Y.LayerSet("白地図", [blankmap],{"maxZoom":20, "minZoom":11});
+    //Mapオブジェクトにレイヤーセットを追加します。
+    map.addLayerSet("blankmap", layerset);
+    //地図を描画します。
+    map.drawMap(new Y.LatLng(35.6821141786951,139.75630702905684), 11, Y.LayerSetId.NORMAL);
+    //表示を白地図にします。
+    map.setLayerSet( "blankmap" );
+}
+/**
+ * スタイルを設定します。
+ */
+function setStyle() {
+    var styleobj = document.getElementById("style_onoff");
+    var param = styleobj.value;
+    if(param.indexOf(";") != -1) param="";
+    if(param.indexOf("(") != -1) param="";
+    if(param.indexOf(")") != -1) param="";
+    var style = "";
+    if(param != "") eval("style="+param+";");
+    //スタイルを設定します。
+    blankmap.setStyle(style, true);
+}
+</pre>
+</div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet --> 
+<a href="https://developer.yahoo.co.jp/about"> 
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a> 
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet --> 
+
+</body> 
+</html> 

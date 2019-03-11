@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>コントロールの位置を調整する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+<body>
+  <div id="map" style="width:600px; height:480px;"></div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+window.onload = function() {
+    var map = new Y.Map("map");
+    homeCtrl = new Y.HomeControl(
+                 { latlng  : new Y.LatLng(35.680840,139.767009),
+                   visible : true,
+                   visibleButton : true});
+
+    //基本的なコントロールを左上から(x座標:200px, y座標180px)の位置に表示
+    map.addControl(new Y.LayerSetControl(), new Y.ControlPosition(Y.ControlPosition.TOP_LEFT, new Y.Size(200,180)));
+    //ホームアイコンコントロールを左上から(x座標:300px, y座標150px)の位置に表示
+    map.addControl(homeCtrl, new Y.ControlPosition(Y.ControlPosition.TOP_LEFT,  new Y.Size(300,150)));
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 16, Y.LayerSetId.NORMAL);
+}
+-->
+</script>
+</body>
+</html>

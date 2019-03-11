@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>プラグインを利用する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+<body>
+  <div id="map" style="width:600px; height:480px;"></div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+var map;
+window.onload = function() {
+    //地図を初期化
+    map = new Y.Map("map");
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.ZoomControl());
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 16, Y.LayerSetId.NORMAL);
+
+    //プラグインを追加
+    var plugin = new HelloPlugin();
+    map.addPlugin(plugin);
+};
+
+
+//プラグインの定義
+//地図上にアイコンを表示するHelloプラグインを作成します。
+var HelloPlugin = Y.extend(Y.Plugin, function() {
+
+});
+
+HelloPlugin.prototype.load = function(map) {
+    this.map = map;
+    this.marker = new Y.Marker(this.map.getCenter());
+    this.map.addFeature(this.marker);
+    this.marker.openInfoWindow('Hello!');
+};
+
+HelloPlugin.prototype.unload = function() {
+    this.map.removeFeature(this.marker);
+
+    if (this.map.isInfoWindowOpen()) {
+        this.map.closeInfoWindow();
+    }
+};
+//-->
+</script>
+</body>
+</html>

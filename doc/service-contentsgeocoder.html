@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>コンテンツジオコーディングを利用する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+<body>
+
+<div id="map" style="width:600px; height:480px;"></div>
+<p>場所を表すキーワードを含む文章を入力し、確認ボタンをクリックしてください。</p>
+<textarea id="content" style="width:550px;">
+東京都港区赤坂から東京都千代田区神田錦町まで50分ほどかかります。
+</textarea>
+<p><input type="button" id="submit" value="確認"></p>
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+<script >
+<!--
+
+window.onload = function(){
+    var map = new Y.Map("map");
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 12 , "map");
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.ZoomControl());
+    map.addControl(new Y.ScaleControl());
+
+    // ジオコーダオブジェクトの生成    
+    var geocoder = new Y.GeoCoder();
+
+    // コンテンツジオコーディングの結果を取得する関数の定義
+    var contentsGeoCoding = function(){
+        var content = document.getElementById('content').value;
+        var bounds = new Y.LatLngBounds();
+        var options = {
+            "category": "address"
+        };
+        var request = {
+            "content": content, 
+            "options": options
+        };
+        geocoder.execute(request, function(result){
+            var len = result.features.length;
+            for (var i=0; i<len; i++) {
+                var feature = result.features[i];
+                bounds.extend(feature.latlng);
+            }
+            
+            map.clearFeatures();
+            
+            for (var i=0; i<len; i++) {
+                var feature = result.features[i];
+                feature.bindInfoWindow(feature.name + "<br>「<b>" + feature.property.Query + "</b>」がマッチしました"); 
+            }
+
+            map.addFeatures(result.features);
+
+            map.drawBounds(bounds);
+        });
+    }
+    
+    document.getElementById('submit').onclick = contentsGeoCoding;
+    
+}
+-->
+</script>
+
+</body>
+</html>

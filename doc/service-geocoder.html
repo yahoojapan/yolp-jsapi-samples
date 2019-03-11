@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>ジオコーディング - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+
+<body>
+<input id="keyword" type="text" value="" size="40" >
+<input type="button" value="検 索" onclick="search()" ><br />
+<div id="search-result" ></div>
+<div id="map" style="width:600px; height:380px;"></div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+var map = new Y.Map("map");
+map.drawMap(new Y.LatLng(35.680840,139.767009), 15);
+map.addControl(new Y.LayerSetControl());
+map.addControl(new Y.SliderZoomControlVertical());
+
+//検索を実行
+function search() {
+
+    //クエリを指定してジオコーディングを実行
+    var query = document.getElementById('keyword').value;
+    var geocoder = new Y.GeoCoder();
+    geocoder.execute( { query : query } , function( result ) {
+        if ( result.features.length > 0 ) {
+            //ジオコーディング結果の緯度経度へ移動
+            map.drawMap( result.features[0].latlng );
+            //ヒットした結果を表示
+            document.getElementById('search-result').innerHTML = result.features[0].name;
+        }
+    } );
+}
+//-->
+</script>
+</body>
+</html>

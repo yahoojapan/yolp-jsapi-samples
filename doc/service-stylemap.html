@@ -1,0 +1,275 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>地図のスタイルを変更する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script type="text/javascript" src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr"></script>
+<script type="text/javascript">
+var map;            //地図オブジェクト
+var stylemaplayer;  //スタイル地図レイヤー
+var layerset;       //レイヤーセット
+/**
+ * window.onloadイベントにて地図の読込処理を行います。
+ */
+window.onload = function() {
+    map = new Y.Map("map",{"configure":{"scrollWheelZoom":true}});
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.SliderZoomControlHorizontal());
+    map.addControl(new Y.CenterMarkControl());
+
+    //スタイル地図レイヤーを生成します。
+    stylemaplayer = new Y.StyleMapLayer("simple");
+    setStyle();
+    //レイヤーセットを作成します。
+    layerset = new Y.LayerSet("スタイル地図", [stylemaplayer]);
+    //Mapオブジェクトにレイヤーセットを追加します。
+    map.addLayerSet("stylemap",layerset);
+    //標準地図レイヤーをレイヤーセットから削除します。
+    map.removeLayerSet(Y.LayerSetId.NORMAL);
+    //地図を描画します。
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 15 , "stylemap");
+}
+/**
+ * スタイルを設定します。
+ */
+function setStyle() {
+    var param = document.getElementById("style_onoff").value;
+    if(param.indexOf(";") != -1) param="";
+    if(param.indexOf("(") != -1) param="";
+    if(param.indexOf(")") != -1) param="";
+    var style = "";
+    if(param != "") style = eval(param);
+    //スタイルを設定します。
+    stylemaplayer.setStyle(style);
+}
+/**
+ * 図式を設定します。
+ */
+function setBase(selbox) {
+    var idx = selbox.selectedIndex;
+    var basename = selbox.options[idx].value;
+    
+    if (basename == "hybridPhoto") {
+        //航空写真のハイブリッド表現を有効にします。
+        map.setConfigure("hybridPhoto",true);
+        //レイヤーセットを航空写真に切り替えます。
+        if (map.getCurrentLayerSetId() != Y.LayerSetId.PHOTO) {
+            map.setLayerSet(Y.LayerSetId.PHOTO);
+        }
+    } else {
+        //航空写真のハイブリッド表現を無効にします。
+        map.setConfigure("hybridPhoto",false);
+        //レイヤーセットからスタイル地図レイヤーを削除します。
+        layerset.removeLayer(stylemaplayer);
+        //選択された図式名で新しくスタイル地図レイヤーを作成します。
+        stylemaplayer = new Y.StyleMapLayer(basename);
+        //作成したスタイル地図レイヤーをレイヤーセットに追加します。
+        layerset.addLayer(stylemaplayer);
+        //地図を再描画します。
+        map.redraw(true);
+        //レイヤーセットをスタイル地図に切り替えます。
+        if (map.getCurrentLayerSetId() != "stylemap") {
+            map.setLayerSet("stylemap");
+        }
+    }
+    setStyle();
+}
+
+</script>
+<style>
+h1 {
+    font-size:16px;
+    margin:5px;
+    font-weight:bold;
+}
+.sub-menu {
+    margin:4px;
+    padding:4px;
+    border:1px solid;
+}
+h3 {
+    font-size:14px;
+    margin:2px;
+    padding:2px;
+}
+.slapi {
+    width:600px;
+    height:480px;
+}
+.note {
+    color: #ff0000;
+    font-weight: bold;
+    margin:20px 0px;
+}
+.link {
+    margin:5px 0px;
+    font-size:12px;
+}
+.code {
+    width:600px;
+    height:300px;
+    border: 1px solid #000;
+    overflow-y:scroll;
+    font-size: 11px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+<h1>地図のスタイルを変更する</h1>
+<div style="margin:10px 0px;">
+    <p class="link">
+        <a href="https://developer.yahoo.co.jp/sample/map/sample5.html">JavaScriptマップAPIサンプルの一覧に戻る</a>
+    </p>
+    <p class="link">
+        <a href="#srccode">ソースコードを見る</a>
+    </p>
+</div>
+
+<noscript>
+    <div class="note">ブラウザのJavaScriptが無効となっています。正常に動作しない可能性があります。</div>
+</noscript>
+
+<p style="font-size:12px;font-weight:bold;">【使い方】</p>
+<p style="font-size:12px;">
+ 「図式」プルダウンメニューを選択すると、地図のデザインが変更されます。<br />
+「Styleの設定」エリアで、各パラメーターを<b>false</b>に書き換えて「設定」ボタンを押すと、<br />
+指定したパラメーターの対象オブジェクトが地図上で非表示になります。<b>true</b>に書き換えると再表示されます。<br />
+各パラメーターの対象オブジェクトについては、<a href="https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/static.html#exp_style_object">こちら</a>を参照してください。
+</p>
+
+<table id="sample">
+<tr>
+    <td class="left" valign="top">
+    <div id="map" style="width:600px; height:480px"></div>
+    </td>
+    <td class="right" valign="top">
+    <h3>▼&nbsp;図式</h3>
+    <select id="base" onChange="setBase(this);">
+        <option value="standard">スタンダード</option>
+        <option value="vivid">ビビッド</option>
+        <option value="bold">ボールド</option>
+        <option value="simple" selected>シンプル</option>
+        <option value="monotone">モノトーン</option>
+        <option value="red">レッド</option>
+        <option value="orange">オレンジ</option>
+        <option value="yellow">イエロー</option>
+        <option value="yellowishgreen">イエローグリーン</option>
+        <option value="green">グリーン</option>
+        <option value="aquamarine">アクアマリン</option>
+        <option value="lightblue">ライトブルー</option>
+        <option value="blue">ブルー</option>
+        <option value="bluepurple">ブルーパープル</option>
+        <option value="purple">パープル</option>
+        <option value="pink">ピンク</option>
+        <option value="peach" >ピーチ</option>
+        <option value="brown">ブラウン</option>
+        <option value="gray">グレー</option>
+        <option value="midnight">ミッドナイト</option>
+        <option value="railway">鉄道路線</option>
+        <option value="topographic">地形図</option>
+        <option value="waters">水域図</option>
+        <option value="district">行政色分け図</option>
+        <option value="hybridPhoto">ハイブリッドON</option>
+    </select>
+    <h3>▼&nbsp;Styleの設定</h3> 
+<textarea id="style_onoff" style="width:200px; height:350px;" wrap="off">[
+{"label":true},
+{"figure":true},
+{"city":true},
+{"prefecture":true},
+{"area_name":true},
+{"gs":true},
+{"roadside_station":true},
+{"traffic_facility":true},
+{"line_comment":true},
+{"road_name":true},
+{"symbol":true},
+{"road":true},
+{"boundary":true},
+{"water":true}
+]</textarea><br/>
+<input type="button" onclick="setStyle();" value="設定" /><br/>
+    </td>
+</tr>
+</table>
+
+<h3 id="srccode">ソースコード</h3>
+<div class="code">
+<pre>
+var map;            //地図オブジェクト
+var stylemaplayer;  //スタイル地図レイヤー
+var layerset;       //レイヤーセット
+/**
+ * window.onloadイベントにて地図の読込処理を行います。
+ */
+window.onload = function() {
+    map = new Y.Map("map",{"configure":{"scrollWheelZoom":true}});
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.SliderZoomControlHorizontal());
+    map.addControl(new Y.CenterMarkControl());
+
+    //スタイル地図レイヤーを生成します。
+    stylemaplayer = new Y.StyleMapLayer("simple");
+    setStyle();
+    //レイヤーセットを作成します。
+    layerset = new Y.LayerSet("スタイル地図", [stylemaplayer]);
+    //Mapオブジェクトにレイヤーセットを追加します。
+    map.addLayerSet("stylemap",layerset);
+    //標準地図レイヤーをレイヤーセットから削除します。
+    map.removeLayerSet(Y.LayerSetId.NORMAL);
+    //地図を描画します。
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 15 , "stylemap");
+}
+/**
+ * スタイルを設定します。
+ */
+function setStyle() {
+    var param = document.getElementById("style_onoff").value;
+    if(param.indexOf(";") != -1) param="";
+    if(param.indexOf("(") != -1) param="";
+    if(param.indexOf(")") != -1) param="";
+    var style = "";
+    if(param != "") style = eval(param);
+    //スタイルを設定します。
+    stylemaplayer.setStyle(style);
+}
+/**
+ * 図式を設定します。
+ */
+function setBase(selbox) {
+    var idx = selbox.selectedIndex;
+    var basename = selbox.options[idx].value;
+    
+    if (basename == "hybridPhoto") {
+        //航空写真のハイブリッド表現を有効にします。
+        map.setConfigure("hybridPhoto",true);
+        //レイヤーセットを航空写真に切り替えます。
+        if (map.getCurrentLayerSetId() != Y.LayerSetId.PHOTO) {
+            map.setLayerSet(Y.LayerSetId.PHOTO);
+        }
+    } else {
+        //航空写真のハイブリッド表現を無効にします。
+        map.setConfigure("hybridPhoto",false);
+        //レイヤーセットからスタイル地図レイヤーを削除します。
+        layerset.removeLayer(stylemaplayer);
+        //選択された図式名で新しくスタイル地図レイヤーを作成します。
+        stylemaplayer = new Y.StyleMapLayer(basename);
+        //作成したスタイル地図レイヤーをレイヤーセットに追加します。
+        layerset.addLayer(stylemaplayer);
+        //地図を再描画します。
+        map.redraw(true);
+        //レイヤーセットをスタイル地図に切り替えます。
+        if (map.getCurrentLayerSetId() != "stylemap") {
+            map.setLayerSet("stylemap");
+        }
+    }
+    setStyle();
+}
+</pre>
+</div>
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet --> 
+<a href="https://developer.yahoo.co.jp/about"> 
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a> 
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet --> 
+</body>
+</html>

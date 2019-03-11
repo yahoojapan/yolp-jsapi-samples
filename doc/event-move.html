@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>地図中心位置の緯度経度を取得する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+
+<style>
+.sub-menu {
+    margin:4px;
+    padding:4px;
+    border:1px solid;
+}
+.sub-menu h3 {
+    font-size:14px;
+    margin:2px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+<div id="map" style="width:600px; height:480px;"></div>
+<div class="sub-menu">
+<h3>中心点の緯度経度</h3>
+緯度：<input id="lat" type="text" size="25" value="35.665627">  経度：<input id="lng" type="text" size="25" value="139.730738">
+</div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+var map;
+window.onload = function() {
+    map = new Y.Map("map");
+    map.addControl(new Y.CenterMarkControl({ visibleButton: true ,
+                                              visible     : true}));
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 10, Y.LayerSetId.NORMAL);
+
+    //マウス移動終了イベントを設定
+    map.bind("moveend", function(){onMoved();});
+}
+
+//マウス移動終了イベントの定義
+function onMoved(){
+    //地図中心位置の緯度経度を取得
+    latlng = map.getCenter();
+    document.getElementById("lat").value = latlng.lat();
+    document.getElementById("lng").value = latlng.lng();
+}
+
+-->
+</script>
+</body>
+</html>

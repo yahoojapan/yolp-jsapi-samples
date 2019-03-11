@@ -155,6 +155,10 @@ GeoXml切り替えプラグインを使うと、[YDF](http://developer.yahoo.co.
 
 同志社大学HackUのYOLPチュートリアルで使用したテンプレートです。
 
+### doc
+
+Yahoo!デベロッパーネットワーク Yahoo! JavaScriptマップAPIのサンプルです。
+
 
 ライセンス
 ----------

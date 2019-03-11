@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>地図上のオブジェクトのクリックイベントを取得する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+
+<style>
+.sub-menu {
+    margin:4px;
+    padding:4px;
+    border:1px solid;
+}
+.sub-menu h3 {
+    font-size:14px;
+    margin:2px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+  <div id="map" style="width:600px; height:480px;"></div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+var map;
+window.onload = function() {
+    map = new Y.Map("map");
+    map.addControl( new Y.SliderZoomControl() );
+    map.addControl( new Y.LayerSetControl() );
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 9,"map");
+
+    addMarker();
+    addLine();
+}
+
+//地図上にマーカーを追加
+function addMarker() {
+    var geoBox = map.getBounds();
+    var min = geoBox.getSouthWest();
+    var max = geoBox.getNorthEast();
+    var dx = max.Lon - min.Lon;
+    var dy = max.Lat - min.Lat;
+
+    var lon = min.Lon + dx * Math.random();
+    var lat = min.Lat + dy * Math.random();
+    var latlon = new Y.LatLng(lat,lon);
+    var marker = new Y.Marker(latlon);
+
+    //マーカーにクリックイベントを設定
+    marker.bind("click", function(latlng){
+        alert("This is Marker!");
+    });
+    map.addFeature(marker);
+}
+
+//地図上にラインを追加
+function addLine() {
+    var geoBox = map.getBounds();
+    var min = geoBox.getSouthWest();
+    var max = geoBox.getNorthEast();
+    var dx = max.Lon - min.Lon;
+    var dy = max.Lat - min.Lat;
+    var latlon = [];
+
+    for ( var i = 0 ; i < 3 ; i++ ) {
+        var lon = min.Lon + dx * Math.random();
+        var lat = min.Lat + dy * Math.random();
+        latlon[i] = new Y.LatLng(lat,lon);
+    }
+    var line = new Y.Polyline(latlon);
+
+    //ラインにクリックイベントを設定
+    line.bind("click", function(latlng){
+        alert("This is Line!");
+    });
+
+    map.addFeature(line);
+}
+-->
+</script>
+</body>
+</html>

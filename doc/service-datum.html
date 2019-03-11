@@ -1,0 +1,72 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>測地系変換を利用する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+<style>
+.sub-menu {
+    margin:4px;
+    padding:4px;
+    border:1px solid;
+}
+.sub-menu h3 {
+    font-size:14px;
+    margin:2px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+<div id="map" style="width:600px; height:480px;"></div>
+<div class="sub-menu">
+<h3>中心点の緯度経度</h3>
+<p>変換後の日本測地系(緯度,経度)：(<input type="text" id="tkylat">,<input type="text" id="tkylon">)</p>
+<p>変換前の世界測地系(緯度,経度)：(<input type="text" id="wgslat">,<input type="text" id="wgslon">)</p>
+</div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+<script >
+<!--
+window.onload = function(){
+    var map = new Y.Map("map");
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 12 , "map");
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.ZoomControl());
+    map.addControl(new Y.ScaleControl());
+    map.addControl(new Y.CenterMarkControl());
+
+    // 測地系変換オブジェクトの生成
+    var datum = new Y.DatumConvert();
+
+    //指定した緯度経度から日本測地系へ変換する関数を定義します。
+    var datumConvert = function(center){
+        //変換前の緯度経度と、日本測地系に変換した緯度経度を地図上に表示します。
+        datum.convertToTky(center, function(result){
+            var tky = result.features[0].latlng;
+           
+            document.getElementById('wgslat').value = center.lat();
+            document.getElementById('wgslon').value = center.lng();
+            document.getElementById('tkylat').value = tky.lat();
+            document.getElementById('tkylon').value = tky.lng();
+        });
+    }
+
+    datumConvert(map.getCenter());
+
+    //地図の移動が完了した後に、中心点の緯度経度を表示します。
+    map.bind("moveend", function(){
+        var center = map.getCenter();
+        datumConvert(center);
+    });
+}
+-->
+</script>
+
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>YDFを利用する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+<body>
+  <div id="map" style="width:600px; height:480px;"></div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+window.onload = function() {
+    //地図初期化
+    var map = new Y.Map("map");
+    map.drawMap(new Y.LatLng(35.589916, 139.538773), 18, Y.LayerSetId.NORMAL);
+    map.addControl(new Y.LayerSetControl());
+    map.addControl(new Y.ZoomControl());
+
+    //YDFファイルを地図上に表示します。
+    var url = "http://map.yahooapis.jp/OpenLocalPlatform/V1/jsapi/example.ydf";
+    var layer = new Y.GeoXmlLayer( url );
+    map.addLayer( layer );
+    layer.execute();
+
+}
+//-->
+</script>
+</body>
+</html>

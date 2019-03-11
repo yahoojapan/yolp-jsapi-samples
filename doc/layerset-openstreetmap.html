@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>OpenStreetMapを利用する - YOLP JavaScriptマップAPI サンプルコード</title>
+<style type="text/css">
+.code {
+    width:600px;
+    height:300px;
+    border: 1px solid #000;
+    overflow-y:scroll;
+    font-size: 11px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+<ul>
+<li>利用API:&nbsp;<a href="https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/">Yahoo! JavaScriptマップAPI</a></li>
+<li>ガイド:&nbsp;<a href="https://developer.yahoo.co.jp/webapi/map/openlocalplatform/v1/js/#index2-6">Yahoo! JavaScriptマップAPIでOpenStreetMapを使う</a></li>
+</ul>
+<div id="map" style="width:600px; height:480px;"></div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+<script type="text/javascript" charset="utf-8">
+window.onload = function() {
+    // OpenStreetMapを有効にするためのオプションを指定します
+    var map = new Y.Map("map",{
+        "configure": {
+            "enableOpenStreetMap": true,
+            "scrollWheelZoom": true
+        }
+    });
+
+    // 地図の初期表示にOpenStreetMapを指定して描画します
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 14, Y.LayerSetId.OSM);
+    map.addControl(new Y.LayerSetControl());
+};
+</script>
+<div class="code">
+<pre>
+window.onload = function() {
+    // OpenStreetMapを有効にするためのオプションを指定します
+    var map = new Y.Map("map",{
+        "configure": {
+            "enableOpenStreetMap": true,
+            "scrollWheelZoom": true
+        }
+    });
+
+    // 地図の初期表示にOpenStreetMapを指定して描画します
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 14, Y.LayerSetId.OSM);
+    map.addControl(new Y.LayerSetControl());
+};
+</pre>
+</div>
+</body>
+</html>

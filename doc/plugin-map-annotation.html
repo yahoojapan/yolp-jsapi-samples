@@ -1,0 +1,77 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>注記クリックプラグインを利用する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+<body>
+  <div id="map" style="width:600px; height:480px;"></div>
+  <p>地図上の地名、駅名、コンビニエンスストアのアイコン等をクリックしてください。</p>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script type="text/javascript">
+<!--
+window.onload = function() {
+    var map = new Y.Map("map");
+    map.addControl(new Y.ZoomControl());
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 16, Y.LayerSetId.NORMAL);
+
+    //注記をクリックした際に呼び出される関数を定義します。
+    var showAnnotation = function(annotation) {
+        //注記の位置にマーカーを設定します。
+        var nameMarker = new Y.Marker(
+            annotation.centerLatLng, 
+            {
+                "title": annotation.name
+            }
+        );
+        map.addFeature(nameMarker);
+
+        //注記の矩形を透過ポリゴンで描画します。
+        var ne = annotation.latLngBounds.getNorthEast();
+        var sw = annotation.latLngBounds.getSouthWest();
+        var boundary = [
+            new Y.LatLng(sw.lat(), ne.lng()), 
+            new Y.LatLng(ne.lat(), ne.lng()), 
+            new Y.LatLng(ne.lat(), sw.lng()), 
+            new Y.LatLng(sw.lat(), sw.lng())
+        ];
+        var boundPolygon = new Y.Polygon(
+            boundary, 
+            {
+                "strokeStyle": new Y.Style("3300ff", 1, "1.0"), 
+                "fillStyle": new Y.Style("3300ff", 5, "0.2")
+            }
+        );
+        map.addFeature(boundPolygon);
+    };
+
+    //地図の縮尺を変更した際に呼び出される関数を定義します。
+    var clearAnnotation = function() {
+        map.clearFeatures();
+    };
+
+    //注記クリックプラグインの設定を記述します。
+    var configs = {
+        "match": showAnnotation, //注記にマッチした際にshowAnnotation関数をコール
+        "threshold": 2 //注記情報とクリック位置が2ピクセルずれていてもマッチと扱う
+    };
+    var annotationPlugin = new Y.MapAnnotationPlugin(configs);
+
+    //プラグインをMapオブジェクトに追加します。
+    map.addPlugin(annotationPlugin);
+
+    //地図の縮尺が変更されたら、現在地図上に表示している注記情報を削除します。
+    map.bind("zoomend", clearAnnotation);
+}
+-->
+</script>
+</body>
+</html>

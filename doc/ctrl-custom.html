@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>カスタムコントロールを作成する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+<body>
+  <div id="map" style="width:600px; height:480px;"></div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+window.onload = function() {
+    var map = new Y.Map("map");
+    map.addControl(new ButtonZoomControl());
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 16, Y.LayerSetId.NORMAL);
+}
+
+//カスタムコントロールの定義
+//地図を拡大・縮小するボタンのコントロールを作成します。
+function ButtonZoomControl() {
+}
+
+//コントロールの継承
+ButtonZoomControl.prototype = new Y.Control();
+
+//コントロールの初期表示位置。
+ButtonZoomControl.prototype.getDefaultPosition = function(){
+    return new Y.ControlPosition(Y.ControlPosition.TOP_LEFT);
+}
+
+//コントロールの初期化処理。
+ButtonZoomControl.prototype.initialize = function(map){
+    var container  = document.createElement("div");
+
+    var zoomInBtn  = document.createElement("input");
+    zoomInBtn.type = "button";
+    zoomInBtn.value = "Zoom In";
+    zoomInBtn.onClick = "map.zoomIn()";
+    Y.Event.addListener(zoomInBtn, "click", function() {
+        map.zoomIn();
+    });
+    container.appendChild(zoomInBtn);
+
+    var zoomOutBtn = document.createElement("input");
+    zoomOutBtn.type = "button";
+    zoomOutBtn.value = "Zoom Out";
+    Y.Event.addListener(zoomOutBtn, "click", function() {
+        map.zoomOut();
+    });
+    container.appendChild(zoomOutBtn);
+
+    return container;
+}
+-->
+</script>
+</body>
+</html>

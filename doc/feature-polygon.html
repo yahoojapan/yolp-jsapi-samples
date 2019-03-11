@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+ "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+<title>ポリゴンを表示する - YOLP JavaScriptマップAPI サンプルコード</title>
+<script src="https://map.yahooapis.jp/js/V1/jsapi?appid=OY1oDxsr" type="text/javascript"  charset="UTF-8" ></script>
+</head>
+<style>
+.sub-menu {
+    margin:4px;
+    padding:4px;
+    border:1px solid;
+}
+.sub-menu h3 {
+    font-size:14px;
+    margin:2px;
+    padding:2px;
+}
+</style>
+</head>
+<body>
+<div id="map" style="width:600px; height:480px;"></div>
+<div class="sub-menu">
+<h3>ポリゴン追加</h3>
+<input type="button" value="追加" onclick="addPolygon(1)" />
+<input type="button" value="100個追加" onclick="addPolygon(100)" />
+</div>
+<div>
+<input type="button" value="消去" onclick="clearAll();" />
+</div>
+
+<!-- Begin Yahoo! JAPAN Web Services Attribution Snippet -->
+<a href="https://developer.yahoo.co.jp/about">
+<img src="https://s.yimg.jp/images/yjdn/yjdn_attbtn2_105_17.gif" width="105" height="17" title="Webサービス by Yahoo! JAPAN" alt="Webサービス by Yahoo! JAPAN" border="0" style="margin:15px 15px 15px 15px"></a>
+<!-- End Yahoo! JAPAN Web Services Attribution Snippet -->
+
+
+<script>
+<!--
+var map;
+window.onload = function() {
+    map = new Y.Map("map");
+    map.addControl( new Y.SliderZoomControl() );
+    map.addControl( new Y.LayerSetControl() );
+    map.drawMap(new Y.LatLng(35.680840,139.767009), 9,"map");
+}
+
+//ポリゴン追加処理を定義
+function addPolygon(n) {
+    var geoBox = map.getBounds();
+    var min = geoBox.getSouthWest();
+    var max = geoBox.getNorthEast();
+    var dx = max.Lon - min.Lon;
+    var dy = max.Lat - min.Lat;
+    for ( var i = 0 ; i < n ; i++ ) {
+        var latlon = [];
+
+        //ランダムなポリゴンを生成
+        for ( var j = 0 ; j < 5 ; j++ ) {
+            var lon = min.Lon + dx * Math.random();
+            var lat = min.Lat + dy * Math.random();
+
+            latlon[j] = new Y.LatLng(lat,lon);
+        }
+        var polygon = new Y.Polygon(latlon);
+        //ポリゴンを追加
+        map.addFeature(polygon,false);
+    }
+    map.redraw();
+}
+
+//地図上のオブジェクトの削除処理
+function clearAll() {
+    //地図上のオブジェクトを削除
+    map.clearFeatures();
+}
+//-->
+</script>
+</body>
+</html>
