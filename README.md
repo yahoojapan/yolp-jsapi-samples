@@ -1,3 +1,14 @@
+【重要】 YOLP Web APIにおける一部API・SDKの提供終了お知らせ
+==========================================
+
+いつもYahoo! Open Local Platform（YOLP）をご利用いただきありがとうございます。  
+この度誠に勝手ながら、YOLPの一部Web API・SDKの提供を終了いたします。   
+詳細は[こちら](https://map.yahoo.co.jp/promo/yolp/close_information.html) を参照ください。
+
+*****
+<br />
+<br />
+
 Yahoo! JavaScriptマップAPIサンプルコード集
 ==========================================
 
